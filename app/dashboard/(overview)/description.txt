@@ -1,0 +1,38 @@
+이 (overview) 폴더는 NextJS에서 말하는 "Route Groups" 입니다. 
+Route Groups는 폴더 이름에 괄호 "( )" 를 씌우는 것으로 정의할 수 있습니다
+
+이 Route Groups폴더안의 폴더는 Nested된 폴더구조가 전부 URL path로 변환되는 NextJS의 기본 매커니즘
+을 피할 수 있습니다.
+
+예를들어 /dashboard/(overview)/pages.tsx는 url상에서 /dashboard가 된다는 것이죠.
+(이는 page.tsx의 속성또한 같이 적용 된 것입니다)
+
+이는 마치 실제로 URL상에선 보이진 않지만 "의미론적 Grouping"을 행한다고 생각 해도 좋습니다.
+그러니까, 
+
+dashboard 
+  (overview)
+    loading.tsx
+    page.tsx
+  customers
+    page.tsx
+  invoices
+    page.tsx
+
+아래와 같은 폴더구조는 
+
+dashboard: [
+  { overview }, 
+  { customers },
+  { invocies }
+] 가 되는 것이고 이는
+
+dashboard: [
+  loading.tsx,
+  page.tsx,
+  { customers },
+  { invoices }
+] 와는 완전히 다릅니다.( 위의 예제는 상속성에 의해 dashboard의 loading.tsx가 밑의 customer 와
+invoices에도 적용됨.)
+
+이 "의미론적 Grouping"은 특히 layout의 분리화에도 아주 유용합니다.
