@@ -7,10 +7,15 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
+import { createInvoice } from '@/app/lib/actions';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
   return (
-    <form>
+    // 원래 라면 HTML은 action 속성에 URL을 넣어야하지만, React에서는 action 속성을
+    // 특별한 prop취급으로 사용하므로, react가 자동적으로 호출할 수 있는 함수를 넣을 수 있게끔
+    // 해준다. 또한 뒷작업으로 NextJS는 자동으로 POST요청을 보내게 되어서 우리는 이를 따로 구연하지
+    // 않아도 된다.
+    <form action={createInvoice}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">

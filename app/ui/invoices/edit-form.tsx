@@ -9,6 +9,7 @@ import {
 } from '@heroicons/react/24/outline';
 import Link from 'next/link';
 import { Button } from '@/app/ui/button';
+import { updateInvoice } from '@/app/lib/actions';
 
 export default function EditInvoiceForm({
   invoice,
@@ -17,8 +18,13 @@ export default function EditInvoiceForm({
   invoice: InvoiceForm;
   customers: CustomerField[];
 }) {
+  // updateInovice Server action에 넘겨줄 인자를 bind로 묶는다.
+  const updateInvoiceWithId = updateInvoice.bind(null, invoice.id);
+  
   return (
-    <form>
+    // 보통 Server Actions을 사용할때 뭔가 attribute를 넘겨야한다면 함수자체를 호출하는게아니라, bind를 이용해서 server action과 attribute를 묶어서 넘겨준다.
+    // 만약 함수자체를 updateInvoiceWithId(id)로 호출하게 되면, 에러가난다.
+    <form action={updateInvoiceWithId}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
