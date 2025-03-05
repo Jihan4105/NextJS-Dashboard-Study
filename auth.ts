@@ -25,10 +25,11 @@ export const { auth, signIn, signOut } = NextAuth({
     Credentials({
       // authorize 함수를 사용하여 authentication logic을 다룰 수 있습니다. Server Actions와 유사하게 zod를 통해서 email과 password를 검증 할 수 있습니다.
       async authorize(credentials) {
-        console.log(credentials);
         const parsedCredentials = z
           .object({ email: z.string().email(), password: z.string().min(6) })
           .safeParse(credentials);
+        
+        console.log(parsedCredentials);
 
         if(parsedCredentials.success) {
           const { email, password } = parsedCredentials.data;
@@ -43,4 +44,5 @@ export const { auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  secret: process.env.SECRET,
 });
