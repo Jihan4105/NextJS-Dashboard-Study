@@ -1,3 +1,5 @@
+"use client";
+
 import { CustomerField } from '@/app/lib/definitions';
 import Link from 'next/link';
 import {
@@ -7,15 +9,19 @@ import {
   UserCircleIcon,
 } from '@heroicons/react/24/outline';
 import { Button } from '@/app/ui/button';
-import { createInvoice } from '@/app/lib/actions';
+import { createInvoice, State } from '@/app/lib/actions';
+import { useActionState } from 'react';
 
 export default function Form({ customers }: { customers: CustomerField[] }) {
+  const initialState: State = { message: null, errors: {} };
+  const [state, formAction] = useActionState(createInvoice, initialState);
+
   return (
     // 원래 라면 HTML은 action 속성에 URL을 넣어야하지만, React에서는 action 속성을
     // 특별한 prop취급으로 사용하므로, react가 자동적으로 호출할 수 있는 함수를 넣을 수 있게끔
     // 해준다. 또한 뒷작업으로 NextJS는 자동으로 POST요청을 보내게 되어서 우리는 이를 따로 구연하지
     // 않아도 된다.
-    <form action={createInvoice}>
+    <form action={formAction}>
       <div className="rounded-md bg-gray-50 p-4 md:p-6">
         {/* Customer Name */}
         <div className="mb-4">
@@ -28,6 +34,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               name="customerId"
               className="peer block w-full cursor-pointer rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
               defaultValue=""
+              aria-describedby="customer-error"
             >
               <option value="" disabled>
                 Select a customer
@@ -39,6 +46,14 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               ))}
             </select>
             <UserCircleIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500" />
+          </div>
+          <div id="customer-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.customerId &&
+              state.errors.customerId.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
           </div>
         </div>
 
@@ -56,8 +71,20 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                 step="0.01"
                 placeholder="Enter USD amount"
                 className="peer block w-full rounded-md border border-gray-200 py-2 pl-10 text-sm outline-2 placeholder:text-gray-500"
+                // form데이터를 아무 처리 없이 바로 DB에 넣는다면, 공란의 경우엔 error가 발생하게 된다.
+                // client side에서 이를 방지하기 위한 가장 간단한 방법은 required 속성을 추가하는 것이다.
+                // required
+                aria-describedby='amount-error'
               />
               <CurrencyDollarIcon className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
+            </div>
+            <div id="amount-error" aria-live="polite" aria-atomic="true">
+              {state.errors?.amount &&
+                state.errors.amount.map((error: string) => (
+                  <p className="mt-2 text-sm text-red-500" key={error}>
+                    {error}
+                  </p>
+                ))}
             </div>
           </div>
         </div>
@@ -76,6 +103,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   type="radio"
                   value="pending"
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  aria-describedby='status-error'
                 />
                 <label
                   htmlFor="pending"
@@ -91,6 +119,7 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
                   type="radio"
                   value="paid"
                   className="h-4 w-4 cursor-pointer border-gray-300 bg-gray-100 text-gray-600 focus:ring-2"
+                  aria-describedby='status-error'
                 />
                 <label
                   htmlFor="paid"
@@ -101,6 +130,19 @@ export default function Form({ customers }: { customers: CustomerField[] }) {
               </div>
             </div>
           </div>
+          <div id="status-error" aria-live="polite" aria-atomic="true">
+            {state.errors?.status &&
+              state.errors.status.map((error: string) => (
+                <p className="mt-2 text-sm text-red-500" key={error}>
+                  {error}
+                </p>
+              ))}
+          </div>
+          {state?.message && 
+            <p className="mt-2 text-sm text-red-500" key={state.message}>
+              {state.message}
+            </p>
+          }
         </fieldset>
       </div>
       <div className="mt-6 flex justify-end gap-4">
