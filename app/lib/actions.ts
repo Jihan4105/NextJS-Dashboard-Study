@@ -124,8 +124,6 @@ export async function updateInvoice(id: string, prevState: State, formData: Form
     status: formData.get('status'),
   });
 
-  console.log(validatedFields);
-
   if (!validatedFields.success) {
     return {
       errors: validatedFields.error.flatten().fieldErrors,
